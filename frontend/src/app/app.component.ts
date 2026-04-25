@@ -16,6 +16,38 @@ export class AppComponent implements OnInit {
   private readonly formBuilder = inject(FormBuilder);
   private readonly translationApi = inject(TranslationApiService);
   readonly maxCharacters = 5000;
+  readonly fallbackStyles: StyleOption[] = [
+    {
+      code: 'corporate',
+      label: 'Corporate',
+      description: 'Boardroom-clean, measured and professional.'
+    },
+    {
+      code: 'politician',
+      label: 'Politician',
+      description: 'Public-facing, reassuring, persuasive and slightly evasive.'
+    },
+    {
+      code: 'tech-startup',
+      label: 'Tech Startup',
+      description: 'Fast, ambitious, product-obsessed and full of momentum.'
+    },
+    {
+      code: 'legal',
+      label: 'Legal',
+      description: 'Formal, precise, cautious and clause-heavy.'
+    },
+    {
+      code: 'finance',
+      label: 'Finance',
+      description: 'Analytical, numbers-aware, risk-conscious and market-savvy.'
+    },
+    {
+      code: 'pretentious',
+      label: 'Pretentious',
+      description: 'Lofty, overinterpreted and dramatically artsy.'
+    }
+  ];
 
   readonly form = this.formBuilder.nonNullable.group({
     text: ['', [Validators.required, Validators.maxLength(this.maxCharacters)]],
@@ -73,7 +105,11 @@ export class AppComponent implements OnInit {
         }
       },
       error: () => {
-        this.errorMessage = 'Unable to load the available styles.';
+        this.styles = this.fallbackStyles;
+
+        if (!this.styles.some((style) => style.code === this.form.controls.style.value)) {
+          this.form.patchValue({ style: this.styles[0].code });
+        }
       }
     });
   }

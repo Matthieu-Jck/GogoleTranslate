@@ -2,39 +2,17 @@
   <section class="hero-shell">
     <div class="hero-copy">
       <p class="eyebrow">Style Translator AI</p>
-      <h1>Same meaning. Entirely different social costume.</h1>
+      <h1>Rewrite the text. Keep the meaning.</h1>
       <p class="subtitle">
-        Shift a message from boardroom polish to gallery-opening nonsense without losing the original idea.
+        Choose a tone, paste your text, and get a rewrite in the same language.
       </p>
-
-      <div class="hero-metrics">
-        <article class="metric-card">
-          <span class="metric-value">6</span>
-          <span class="metric-label">Voices ready</span>
-        </article>
-        <article class="metric-card">
-          <span class="metric-value">1</span>
-          <span class="metric-label">Meaning preserved</span>
-        </article>
-        <article class="metric-card metric-card-wide">
-          <span class="metric-value">Same language</span>
-          <span class="metric-copy">The rewrite keeps the language of the original text while changing the tone.</span>
-        </article>
-      </div>
     </div>
 
-    <aside class="hero-card">
-      <p class="section-kicker">Current voice</p>
-      <h2>{{ selectedStyle?.label || 'Corporate' }}</h2>
-      <p>
-        {{ selectedStyle?.description || 'Choose a voice to see how the rewrite will behave.' }}
-      </p>
-      <div class="hero-pill-row">
-        <span class="hero-pill">Sharper tone</span>
-        <span class="hero-pill">Same idea</span>
-        <span class="hero-pill">Fast rewrite</span>
-      </div>
-    </aside>
+    <div class="hero-status">
+      <span class="hero-chip">{{ styles.length || fallbackStyles.length }} styles</span>
+      <span class="hero-chip">{{ selectedStyle?.label || 'Corporate' }}</span>
+      <span class="hero-chip">Same language</span>
+    </div>
   </section>
 
   <section class="workspace">
@@ -42,7 +20,7 @@
       <div class="panel-header">
         <div>
           <p class="section-kicker">Voice selector</p>
-          <h2>Choose the persona</h2>
+          <h2>Choose the tone</h2>
         </div>
         <div class="selected-badge">{{ selectedStyle?.label || 'Select a voice' }}</div>
       </div>
@@ -85,7 +63,7 @@
       <div class="panel-header">
         <div>
           <p class="section-kicker">Output</p>
-          <h2>Rewritten version</h2>
+          <h2>Result</h2>
         </div>
         <div class="model-badge" *ngIf="result">Model {{ result.model }}</div>
       </div>
