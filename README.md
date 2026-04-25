@@ -116,6 +116,11 @@ Secrets GitHub a configurer dans le repo:
 - `FLY_API_TOKEN`
 - `GROQ_API_KEY`
 
+Optionnel si tu preferes des tokens Fly separes par app:
+
+- `FLY_API_TOKEN_BACKEND`
+- `FLY_API_TOKEN_FRONTEND`
+
 Workflows:
 
 - [ci.yml](<C:\Users\matth\Desktop\Projets\GogoleTranslate\.github\workflows\ci.yml>)
@@ -129,7 +134,7 @@ Configs Fly:
 
 En production, le frontend passe par un proxy Nginx vers le backend Fly, ce qui evite les appels cross-origin depuis le navigateur.
 
-Si tes apps Fly portent d'autres noms que `style-translator-api` et `style-translator-web`, il faut mettre a jour:
+Si tes apps Fly portent d'autres noms que `gogoletranslate-api` et `gogoletranslate-web`, il faut mettre a jour:
 
 - `app = ...` dans les deux `fly.toml`
 - `API_PROXY_PASS` dans [frontend/fly.toml](<C:\Users\matth\Desktop\Projets\GogoleTranslate\frontend\fly.toml>)

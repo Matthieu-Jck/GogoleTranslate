@@ -1,11 +1,11 @@
-app = "style-translator-web"
+app = "gogoletranslate-web"
 primary_region = "cdg"
 
 [build]
   dockerfile = "Dockerfile"
 
 [env]
-  API_PROXY_PASS = "https://style-translator-api.fly.dev"
+  API_PROXY_PASS = "https://gogoletranslate-api.fly.dev"
 
 [[services]]
   internal_port = 80
