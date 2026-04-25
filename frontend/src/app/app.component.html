@@ -2,7 +2,6 @@
   <header class="topbar">
     <div class="brand-block">
       <p class="brand">GogoleTranslate</p>
-      <h1 class="page-title">{{ copy.headline }}</h1>
     </div>
 
     <div class="site-language">
@@ -28,13 +27,51 @@
           <p class="section-kicker">{{ copy.sourceTitle }}</p>
         </div>
 
-        <label class="select-wrap">
-          <select formControlName="sourceStyle">
-            <option *ngFor="let style of visibleStyles" [value]="style.code">
-              {{ getStyleName(style.code, style.label) }}
-            </option>
-          </select>
-        </label>
+        <div class="picker-stack">
+          <span class="picker-label">{{ copy.chooseLanguage }}</span>
+
+          <div class="language-picker">
+            <button
+              type="button"
+              class="picker-button"
+              [class.open]="isPickerOpen('sourceStyle')"
+              [attr.aria-expanded]="isPickerOpen('sourceStyle')"
+              [attr.aria-label]="copy.chooseLanguage"
+              aria-haspopup="listbox"
+              (click)="togglePicker('sourceStyle')"
+            >
+              <span class="picker-icon" aria-hidden="true">{{ getStyleIcon(selectedSourceStyle.code) }}</span>
+              <span class="picker-copy">
+                <span class="picker-title">{{ getStyleName(selectedSourceStyle.code, selectedSourceStyle.label) }}</span>
+                <span class="picker-subtitle">{{ getStyleDescription(selectedSourceStyle) }}</span>
+              </span>
+              <span class="picker-chevron" aria-hidden="true"></span>
+            </button>
+
+            <div
+              *ngIf="isPickerOpen('sourceStyle')"
+              class="picker-menu"
+              role="listbox"
+              [attr.aria-label]="copy.chooseLanguage"
+            >
+              <button
+                *ngFor="let style of visibleStyles"
+                type="button"
+                class="picker-option"
+                [class.active]="form.controls.sourceStyle.value === style.code"
+                [attr.aria-selected]="form.controls.sourceStyle.value === style.code"
+                role="option"
+                (click)="selectStyle('sourceStyle', style.code)"
+              >
+                <span class="picker-icon option-icon" aria-hidden="true">{{ getStyleIcon(style.code) }}</span>
+                <span class="option-copy">
+                  <span class="option-title">{{ getStyleName(style.code, style.label) }}</span>
+                  <span class="option-description">{{ getStyleDescription(style) }}</span>
+                </span>
+              </button>
+            </div>
+          </div>
+        </div>
       </div>
 
       <textarea
@@ -58,21 +95,62 @@
           <p class="section-kicker">{{ copy.outputTitle }}</p>
         </div>
 
-        <label class="select-wrap">
-          <select [formControl]="form.controls.targetStyle">
-            <option *ngFor="let style of visibleStyles" [value]="style.code">
-              {{ getStyleName(style.code, style.label) }}
-            </option>
-          </select>
-        </label>
+        <div class="picker-stack">
+          <span class="picker-label">{{ copy.chooseLanguage }}</span>
+
+          <div class="language-picker">
+            <button
+              type="button"
+              class="picker-button"
+              [class.open]="isPickerOpen('targetStyle')"
+              [attr.aria-expanded]="isPickerOpen('targetStyle')"
+              [attr.aria-label]="copy.chooseLanguage"
+              aria-haspopup="listbox"
+              (click)="togglePicker('targetStyle')"
+            >
+              <span class="picker-icon" aria-hidden="true">{{ getStyleIcon(selectedTargetStyle.code) }}</span>
+              <span class="picker-copy">
+                <span class="picker-title">{{ getStyleName(selectedTargetStyle.code, selectedTargetStyle.label) }}</span>
+                <span class="picker-subtitle">{{ getStyleDescription(selectedTargetStyle) }}</span>
+              </span>
+              <span class="picker-chevron" aria-hidden="true"></span>
+            </button>
+
+            <div
+              *ngIf="isPickerOpen('targetStyle')"
+              class="picker-menu"
+              role="listbox"
+              [attr.aria-label]="copy.chooseLanguage"
+            >
+              <button
+                *ngFor="let style of visibleStyles"
+                type="button"
+                class="picker-option"
+                [class.active]="form.controls.targetStyle.value === style.code"
+                [attr.aria-selected]="form.controls.targetStyle.value === style.code"
+                role="option"
+                (click)="selectStyle('targetStyle', style.code)"
+              >
+                <span class="picker-icon option-icon" aria-hidden="true">{{ getStyleIcon(style.code) }}</span>
+                <span class="option-copy">
+                  <span class="option-title">{{ getStyleName(style.code, style.label) }}</span>
+                  <span class="option-description">{{ getStyleDescription(style) }}</span>
+                </span>
+              </button>
+            </div>
+          </div>
+        </div>
       </div>
 
-      <div class="result" *ngIf="result; else emptyState">
+      <div class="result" *ngIf="result as currentResult; else emptyState">
         <div class="result-meta">
-          <span class="result-style">{{ resultStyleName }}</span>
+          <span class="result-style">
+            <span class="result-style-icon" aria-hidden="true">{{ getStyleIcon(currentResult.styleCode) }}</span>
+            {{ resultStyleName }}
+          </span>
           <span class="result-state">{{ copy.resultReady }}</span>
         </div>
-        <p>{{ result.translatedText }}</p>
+        <p>{{ currentResult.translatedText }}</p>
       </div>
 
       <ng-template #emptyState>
@@ -82,7 +160,7 @@
         </div>
       </ng-template>
 
-      <div class="model-badge" *ngIf="result">{{ copy.modelLabel(result.model) }}</div>
+      <div class="model-badge" *ngIf="result as currentResult">{{ copy.modelLabel(currentResult.model) }}</div>
     </section>
   </section>
 

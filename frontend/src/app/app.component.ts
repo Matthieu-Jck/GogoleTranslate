@@ -1,11 +1,12 @@
 import { CommonModule, DOCUMENT } from '@angular/common';
-import { Component, OnInit, inject } from '@angular/core';
+import { Component, HostListener, OnInit, inject } from '@angular/core';
 import { FormBuilder, ReactiveFormsModule, Validators } from '@angular/forms';
 import { finalize } from 'rxjs';
 import { StyleOption, TranslateResponse } from './core/models/translation.models';
 import { TranslationApiService } from './core/services/translation-api.service';
 
 type SiteLanguage = 'fr' | 'en';
+type StyleControlName = 'sourceStyle' | 'targetStyle';
 
 interface SiteLanguageOption {
   code: SiteLanguage;
@@ -13,11 +14,11 @@ interface SiteLanguageOption {
 }
 
 interface UiCopy {
-  headline: string;
   siteLanguageLabel: string;
   sourceTitle: string;
   sourcePlaceholder: string;
   outputTitle: string;
+  chooseLanguage: string;
   emptyTitle: string;
   emptyBody: string;
   translate: string;
@@ -30,6 +31,12 @@ interface UiCopy {
 interface LocalizedStyleLabel {
   fr: string;
   en: string;
+}
+
+interface StyleMeta {
+  icon: string;
+  name: LocalizedStyleLabel;
+  description: LocalizedStyleLabel;
 }
 
 const SITE_LANGUAGE_STORAGE_KEY = 'gogoletranslate-site-language';
@@ -51,13 +58,13 @@ const SITE_LANGUAGES: SiteLanguageOption[] = [
 
 const UI_COPY: Record<SiteLanguage, UiCopy> = {
   fr: {
-    headline: 'Traduire un texte',
     siteLanguageLabel: 'Langue du site',
-    sourceTitle: 'Source',
+    sourceTitle: 'Texte source',
     sourcePlaceholder: 'Quel texte souhaitez-vous traduire ?',
-    outputTitle: 'R\u00e9sultat',
-    emptyTitle: 'Le r\u00e9sultat appara\u00eetra ici.',
-    emptyBody: 'Choisissez un style de d\u00e9part et un style d\u2019arriv\u00e9e, puis cliquez sur Traduire.',
+    outputTitle: 'Traduction',
+    chooseLanguage: 'Choisissez une langue',
+    emptyTitle: 'La traduction appara\u00eetra ici.',
+    emptyBody: 'Choisissez une langue de d\u00e9part et une langue d\u2019arriv\u00e9e, puis cliquez sur Traduire.',
     translate: 'Traduire',
     translating: 'Traduction...',
     resultReady: 'Pr\u00eat',
@@ -65,13 +72,13 @@ const UI_COPY: Record<SiteLanguage, UiCopy> = {
     modelLabel: (model) => `Mod\u00e8le ${model}`
   },
   en: {
-    headline: 'Translate text',
     siteLanguageLabel: 'Site language',
-    sourceTitle: 'Source',
+    sourceTitle: 'Source text',
     sourcePlaceholder: 'What text do you want to translate?',
-    outputTitle: 'Result',
-    emptyTitle: 'The result will appear here.',
-    emptyBody: 'Pick a source style and a result style, then click Translate.',
+    outputTitle: 'Translation',
+    chooseLanguage: 'Choose a language',
+    emptyTitle: 'The translation will appear here.',
+    emptyBody: 'Choose a source language and a target language, then click Translate.',
     translate: 'Translate',
     translating: 'Translating...',
     resultReady: 'Ready',
@@ -80,14 +87,65 @@ const UI_COPY: Record<SiteLanguage, UiCopy> = {
   }
 };
 
-const STYLE_LABELS: Record<string, LocalizedStyleLabel> = {
-  normal: { fr: 'Normal', en: 'Normal' },
-  corporate: { fr: 'Corporate', en: 'Corporate' },
-  politician: { fr: 'Politique', en: 'Political' },
-  'tech-startup': { fr: 'Startup', en: 'Startup' },
-  legal: { fr: 'Juridique', en: 'Legal' },
-  finance: { fr: 'Finance', en: 'Finance' },
-  pretentious: { fr: 'Artistique', en: 'Artsy' }
+const DEFAULT_STYLE_ICON = '🌐';
+
+const STYLE_META: Record<string, StyleMeta> = {
+  normal: {
+    icon: '💬',
+    name: { fr: 'Langue courante', en: 'Everyday language' },
+    description: {
+      fr: 'Simple, claire et naturelle.',
+      en: 'Simple, clear and natural.'
+    }
+  },
+  corporate: {
+    icon: '🏢',
+    name: { fr: 'Langue corporate', en: 'Corporate language' },
+    description: {
+      fr: 'Pos\u00e9e, professionnelle et tr\u00e8s bureau.',
+      en: 'Measured, polished and office-ready.'
+    }
+  },
+  politician: {
+    icon: '🏛️',
+    name: { fr: 'Langue politique', en: 'Political language' },
+    description: {
+      fr: 'Rassurante, publique et un peu \u00e9vasive.',
+      en: 'Public-facing, reassuring and slightly evasive.'
+    }
+  },
+  'tech-startup': {
+    icon: '🚀',
+    name: { fr: 'Langue startup', en: 'Startup language' },
+    description: {
+      fr: 'Rapide, ambitieuse et obs\u00e9d\u00e9e produit.',
+      en: 'Fast, ambitious and product-obsessed.'
+    }
+  },
+  legal: {
+    icon: '⚖️',
+    name: { fr: 'Langue juridique', en: 'Legal language' },
+    description: {
+      fr: 'Pr\u00e9cise, formelle et pleine de nuances.',
+      en: 'Formal, precise and nuance-heavy.'
+    }
+  },
+  finance: {
+    icon: '📈',
+    name: { fr: 'Langue finance', en: 'Finance language' },
+    description: {
+      fr: 'Chiffr\u00e9e, prudente et orient\u00e9e march\u00e9.',
+      en: 'Analytical, careful and market-minded.'
+    }
+  },
+  pretentious: {
+    icon: '🎭',
+    name: { fr: 'Langue artistique', en: 'Artsy language' },
+    description: {
+      fr: 'Th\u00e9\u00e2trale, sophistiqu\u00e9e et volontairement extra.',
+      en: 'Lofty, dramatic and intentionally extra.'
+    }
+  }
 };
 
 @Component({
@@ -125,6 +183,7 @@ export class AppComponent implements OnInit {
   isLoading = false;
   hasError = false;
   siteLanguage: SiteLanguage = 'fr';
+  openPicker: StyleControlName | null = null;
 
   ngOnInit(): void {
     this.restoreSiteLanguage();
@@ -152,6 +211,30 @@ export class AppComponent implements OnInit {
     return this.getStyleName(this.result.styleCode, this.result.styleLabel);
   }
 
+  get selectedSourceStyle(): StyleOption {
+    return this.getSelectedStyle('sourceStyle');
+  }
+
+  get selectedTargetStyle(): StyleOption {
+    return this.getSelectedStyle('targetStyle');
+  }
+
+  @HostListener('document:click', ['$event'])
+  handleDocumentClick(event: MouseEvent): void {
+    const target = event.target;
+
+    if (target instanceof Element && target.closest('.language-picker')) {
+      return;
+    }
+
+    this.openPicker = null;
+  }
+
+  @HostListener('document:keydown.escape')
+  handleEscapeKey(): void {
+    this.openPicker = null;
+  }
+
   setSiteLanguage(language: SiteLanguage): void {
     this.siteLanguage = language;
     this.persistSiteLanguage();
@@ -159,7 +242,28 @@ export class AppComponent implements OnInit {
   }
 
   getStyleName(styleCode: string, fallbackLabel?: string): string {
-    return STYLE_LABELS[styleCode]?.[this.siteLanguage] ?? fallbackLabel ?? styleCode;
+    return STYLE_META[styleCode]?.name[this.siteLanguage] ?? fallbackLabel ?? styleCode;
+  }
+
+  getStyleDescription(style: StyleOption): string {
+    return STYLE_META[style.code]?.description[this.siteLanguage] ?? style.description;
+  }
+
+  getStyleIcon(styleCode: string): string {
+    return STYLE_META[styleCode]?.icon ?? DEFAULT_STYLE_ICON;
+  }
+
+  isPickerOpen(controlName: StyleControlName): boolean {
+    return this.openPicker === controlName;
+  }
+
+  togglePicker(controlName: StyleControlName): void {
+    this.openPicker = this.openPicker === controlName ? null : controlName;
+  }
+
+  selectStyle(controlName: StyleControlName, styleCode: string): void {
+    this.form.controls[controlName].setValue(styleCode);
+    this.openPicker = null;
   }
 
   submit(): void {
@@ -221,6 +325,16 @@ export class AppComponent implements OnInit {
         this.ensureValidSelectedStyles();
       }
     });
+  }
+
+  private getSelectedStyle(controlName: StyleControlName): StyleOption {
+    const selectedCode = this.form.controls[controlName].value;
+
+    return this.visibleStyles.find((style) => style.code === selectedCode) ?? {
+      code: selectedCode,
+      label: selectedCode,
+      description: ''
+    };
   }
 
   private ensureValidSelectedStyles(): void {
