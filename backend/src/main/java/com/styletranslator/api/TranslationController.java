@@ -40,6 +40,11 @@ public class TranslationController {
         return ResponseEntity.ok(styles);
     }
 
+    @GetMapping("/health")
+    public ResponseEntity<Void> health() {
+        return ResponseEntity.ok().build();
+    }
+
     @PostMapping("/translate")
     public ResponseEntity<TranslateResponse> translate(@Valid @RequestBody TranslateRequest request) {
         TranslationResult result = translationService.translate(

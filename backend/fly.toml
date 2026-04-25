@@ -6,6 +6,7 @@ primary_region = "cdg"
 
 [env]
   SERVER_PORT = "8080"
+  JAVA_TOOL_OPTIONS = "-Xms64m -Xmx128m -XX:ReservedCodeCacheSize=48m -XX:+UseSerialGC -XX:+ExitOnOutOfMemoryError"
   LLM_ENABLED = "true"
   LLM_BASE_URL = "https://api.groq.com/openai/v1"
   LLM_CHAT_PATH = "/chat/completions"
@@ -28,5 +29,10 @@ primary_region = "cdg"
     interval = "15s"
     timeout = "2s"
     method = "get"
-    path = "/api/v1/styles"
+    path = "/api/v1/health"
     protocol = "http"
+
+[[vm]]
+  memory = "512mb"
+  cpu_kind = "shared"
+  cpus = 1
