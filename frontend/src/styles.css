@@ -20,11 +20,18 @@ body {
 
 body {
   min-height: 100vh;
+  overflow: hidden;
   background:
     radial-gradient(circle at 12% 10%, rgba(199, 166, 123, 0.16), transparent 26%),
     radial-gradient(circle at 86% 16%, rgba(99, 120, 159, 0.12), transparent 24%),
     linear-gradient(180deg, #f6f1e9 0%, #f4efe7 52%, #eef1f5 100%);
   color: #1b2230;
+}
+
+app-root {
+  display: block;
+  height: 100vh;
+  overflow: hidden;
 }
 
 ::selection {
@@ -36,4 +43,11 @@ input,
 select,
 textarea {
   font: inherit;
+}
+
+@media (max-width: 720px) {
+  body,
+  app-root {
+    overflow: auto;
+  }
 }

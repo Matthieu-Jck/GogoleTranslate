@@ -2,7 +2,7 @@
   <header class="topbar">
     <div class="brand-block">
       <p class="brand">GogoleTranslate</p>
-      <p class="brand-note">{{ copy.brandNote }}</p>
+      <h1 class="page-title">{{ copy.headline }}</h1>
     </div>
 
     <div class="site-language">
@@ -20,20 +20,6 @@
       </div>
     </div>
   </header>
-
-  <section class="intro">
-    <div class="intro-copy">
-      <p class="eyebrow">{{ copy.eyebrow }}</p>
-      <h1>{{ copy.headline }}</h1>
-      <p class="subtitle">{{ copy.subtitle }}</p>
-    </div>
-
-    <div class="intro-chips">
-      <span class="chip">{{ copy.stylesChip(visibleStyles.length) }}</span>
-      <span class="chip chip-selected">{{ selectedStyleName }}</span>
-      <span class="chip">{{ copy.sameLanguage }}</span>
-    </div>
-  </section>
 
   <section class="panel persona-panel">
     <div class="panel-header">
@@ -59,7 +45,6 @@
         <span class="style-copy">
           <span class="style-card-title">{{ getStyleName(style) }}</span>
           <span class="style-card-role">{{ getStyleArchetype(style) }}</span>
-          <span class="style-card-description">{{ getStyleTeaser(style) }}</span>
         </span>
       </button>
     </div>
@@ -83,7 +68,6 @@
       ></textarea>
 
       <div class="meta-row">
-        <span class="meta-note">{{ copy.sameLanguage }}</span>
         <button class="submit-button" type="submit" [disabled]="isLoading">
           {{ isLoading ? copy.translating : copy.translate }}
         </button>

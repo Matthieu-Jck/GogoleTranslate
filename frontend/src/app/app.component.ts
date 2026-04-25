@@ -14,10 +14,7 @@ interface SiteLanguageOption {
 }
 
 interface UiCopy {
-  eyebrow: string;
-  brandNote: string;
   headline: string;
-  subtitle: string;
   siteLanguageLabel: string;
   personaKicker: string;
   personaTitle: string;
@@ -31,10 +28,8 @@ interface UiCopy {
   emptyBody: string;
   translate: string;
   translating: string;
-  sameLanguage: string;
   resultReady: string;
   errorTranslation: string;
-  stylesChip: (count: number) => string;
   modelLabel: (model: string) => string;
 }
 
@@ -43,7 +38,6 @@ interface StylePersonaConfig {
   accent: string;
   label: Record<SiteLanguage, string>;
   archetype: Record<SiteLanguage, string>;
-  teaser: Record<SiteLanguage, string>;
 }
 
 const SITE_LANGUAGE_STORAGE_KEY = 'gogoletranslate-site-language';
@@ -64,10 +58,7 @@ const SITE_LANGUAGES: SiteLanguageOption[] = [
 
 const UI_COPY: Record<SiteLanguage, UiCopy> = {
   fr: {
-    eyebrow: 'Translate',
-    brandNote: 'Corporate, ministre ou babos: meme texte, autre personnage.',
-    headline: 'Translate ton texte',
-    subtitle: 'Choisis un personnage, colle ton texte, et laisse-le parler a ta place.',
+    headline: 'Translate',
     siteLanguageLabel: 'Langue du site',
     personaKicker: 'Casting',
     personaTitle: 'Qui parle ?',
@@ -81,17 +72,12 @@ const UI_COPY: Record<SiteLanguage, UiCopy> = {
     emptyBody: 'Choisis un personnage puis clique sur Translate.',
     translate: 'Translate',
     translating: 'Translating...',
-    sameLanguage: 'Meme langue',
     resultReady: 'Pret',
     errorTranslation: 'La traduction a echoue. Verifie le backend ou la cle API.',
-    stylesChip: (count) => `${count} personnages`,
     modelLabel: (model) => `Modele ${model}`
   },
   en: {
-    eyebrow: 'Translate',
-    brandNote: 'Corporate, minister or bohemian: same text, different character.',
-    headline: 'Translate your text',
-    subtitle: 'Pick a character, paste your text, and let them do the talking.',
+    headline: 'Translate',
     siteLanguageLabel: 'Site language',
     personaKicker: 'Casting',
     personaTitle: 'Who is talking?',
@@ -105,10 +91,8 @@ const UI_COPY: Record<SiteLanguage, UiCopy> = {
     emptyBody: 'Pick a character and click Translate.',
     translate: 'Translate',
     translating: 'Translating...',
-    sameLanguage: 'Same language',
     resultReady: 'Ready',
     errorTranslation: 'Translation failed. Check the backend configuration or the API key.',
-    stylesChip: (count) => `${count} characters`,
     modelLabel: (model) => `Model ${model}`
   }
 };
@@ -123,10 +107,6 @@ const GENERIC_PERSONA: StylePersonaConfig = {
   archetype: {
     fr: 'Version alternative',
     en: 'Alternate version'
-  },
-  teaser: {
-    fr: 'Meme idee, autre allure.',
-    en: 'Same idea, different attitude.'
   }
 };
 
@@ -141,10 +121,6 @@ const STYLE_PERSONAS: Record<string, StylePersonaConfig> = {
     archetype: {
       fr: 'PDG sous cafeine',
       en: 'Caffeinated CEO'
-    },
-    teaser: {
-      fr: 'Lisse, net, calibrage boardroom.',
-      en: 'Polished, neat, boardroom-approved.'
     }
   },
   politician: {
@@ -157,10 +133,6 @@ const STYLE_PERSONAS: Record<string, StylePersonaConfig> = {
     archetype: {
       fr: 'Ministre en campagne',
       en: 'Campaign minister'
-    },
-    teaser: {
-      fr: 'Rassure beaucoup, promet vaguement.',
-      en: 'Very reassuring, gently evasive.'
     }
   },
   'tech-startup': {
@@ -173,10 +145,6 @@ const STYLE_PERSONAS: Record<string, StylePersonaConfig> = {
     archetype: {
       fr: 'Fondateur en hoodie',
       en: 'Hoodie founder'
-    },
-    teaser: {
-      fr: 'Pitch deck, vitesse, disruption.',
-      en: 'Pitch decks, speed, disruption.'
     }
   },
   legal: {
@@ -189,10 +157,6 @@ const STYLE_PERSONAS: Record<string, StylePersonaConfig> = {
     archetype: {
       fr: 'Avocat tres prudent',
       en: 'Cautious lawyer'
-    },
-    teaser: {
-      fr: 'Precis, froid, avec sous-clause implicite.',
-      en: 'Precise, cool, clause-heavy.'
     }
   },
   finance: {
@@ -205,10 +169,6 @@ const STYLE_PERSONAS: Record<string, StylePersonaConfig> = {
     archetype: {
       fr: 'Trader sous Excel',
       en: 'Spreadsheet trader'
-    },
-    teaser: {
-      fr: 'Risque, ratios et ton tres sur de lui.',
-      en: 'Ratios, risk and a confident tone.'
     }
   },
   pretentious: {
@@ -221,10 +181,6 @@ const STYLE_PERSONAS: Record<string, StylePersonaConfig> = {
     archetype: {
       fr: 'Babos inspire',
       en: 'Inspired bohemian'
-    },
-    teaser: {
-      fr: 'Vaporeux, sensible, legerement insupportable.',
-      en: 'Airy, sensitive, slightly unbearable.'
     }
   }
 };
@@ -343,11 +299,6 @@ export class AppComponent implements OnInit {
 
   getStyleArchetype(style: StyleOption): string {
     return this.getStylePersona(style.code).archetype[this.siteLanguage];
-  }
-
-  getStyleTeaser(style: StyleOption): string {
-    const persona = this.getStylePersona(style.code);
-    return persona.teaser[this.siteLanguage] || style.description;
   }
 
   getStylePortrait(style: StyleOption): string {

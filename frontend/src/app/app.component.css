@@ -2,9 +2,11 @@
   position: relative;
   width: min(1180px, 100%);
   margin: 0 auto;
-  padding: 28px 24px 32px;
+  height: 100vh;
+  padding: 18px 24px 18px;
   display: grid;
-  gap: 18px;
+  gap: 12px;
+  overflow: hidden;
 }
 
 .page::before {
@@ -20,7 +22,6 @@
 }
 
 .topbar,
-.intro,
 .workspace,
 .error {
   position: relative;
@@ -29,9 +30,9 @@
 
 .topbar {
   display: flex;
-  align-items: flex-start;
+  align-items: center;
   justify-content: space-between;
-  gap: 18px;
+  gap: 16px;
 }
 
 .brand-block {
@@ -46,12 +47,13 @@
   color: #1b2230;
 }
 
-.brand-note {
-  margin: 6px 0 0;
-  max-width: 36rem;
-  font-size: 0.95rem;
-  line-height: 1.5;
-  color: #5d6572;
+.page-title {
+  margin: 4px 0 0;
+  font-family: 'Newsreader', Georgia, serif;
+  font-size: clamp(1.9rem, 4vw, 2.6rem);
+  line-height: 0.92;
+  letter-spacing: -0.04em;
+  color: #1b2230;
 }
 
 .site-language {
@@ -105,51 +107,6 @@
   color: #fff9f1;
 }
 
-.intro {
-  display: flex;
-  align-items: flex-end;
-  justify-content: space-between;
-  gap: 18px;
-}
-
-.intro-copy {
-  min-width: 0;
-}
-
-.eyebrow {
-  margin: 0 0 10px;
-  font-size: 0.74rem;
-  font-weight: 800;
-  letter-spacing: 0.12em;
-  text-transform: uppercase;
-  color: #8a7355;
-}
-
-.intro-copy h1 {
-  margin: 0;
-  font-family: 'Newsreader', Georgia, serif;
-  font-size: clamp(2.2rem, 5vw, 3.35rem);
-  line-height: 0.95;
-  letter-spacing: -0.04em;
-  color: #1b2230;
-}
-
-.subtitle {
-  margin: 12px 0 0;
-  max-width: 36rem;
-  font-size: 1rem;
-  line-height: 1.55;
-  color: #5d6572;
-}
-
-.intro-chips {
-  display: flex;
-  flex-wrap: wrap;
-  justify-content: flex-end;
-  gap: 10px;
-}
-
-.chip,
 .selected-badge,
 .model-badge,
 .result-style,
@@ -164,22 +121,15 @@
   font-weight: 700;
 }
 
-.chip {
-  border: 1px solid rgba(28, 36, 48, 0.1);
-  background: rgba(255, 255, 255, 0.8);
-  color: #5c5345;
-}
-
-.chip-selected,
 .selected-badge {
   background: #f1e4cf;
   color: #7a5732;
 }
 
 .panel {
-  padding: 18px;
+  padding: 14px;
   border: 1px solid rgba(28, 36, 48, 0.08);
-  border-radius: 24px;
+  border-radius: 22px;
   background: rgba(255, 255, 255, 0.8);
   box-shadow: 0 14px 34px rgba(21, 29, 38, 0.06);
 }
@@ -194,11 +144,11 @@
 }
 
 .panel-header {
-  margin-bottom: 14px;
+  margin-bottom: 10px;
 }
 
 .panel-header.compact {
-  margin-bottom: 16px;
+  margin-bottom: 12px;
 }
 
 .section-kicker {
@@ -212,30 +162,32 @@
 
 .panel-header h2 {
   margin: 0;
-  font-size: 1.16rem;
+  font-size: 1.04rem;
   color: #1b2230;
 }
 
 .persona-panel {
   display: grid;
   gap: 2px;
+  min-height: 0;
 }
 
 .style-grid {
   display: grid;
   grid-template-columns: repeat(3, minmax(0, 1fr));
-  gap: 12px;
+  gap: 10px;
 }
 
 .style-card {
   --accent: #7c6e55;
   display: grid;
-  grid-template-columns: 64px minmax(0, 1fr);
+  grid-template-columns: 72px minmax(0, 1fr);
   align-items: center;
-  gap: 12px;
-  padding: 12px;
+  gap: 10px;
+  min-height: 96px;
+  padding: 10px;
   border: 1px solid rgba(28, 36, 48, 0.08);
-  border-radius: 20px;
+  border-radius: 18px;
   background: linear-gradient(180deg, #ffffff, #fbf8f3);
   text-align: left;
   cursor: pointer;
@@ -259,9 +211,9 @@
 }
 
 .style-portrait {
-  width: 64px;
-  height: 64px;
-  border-radius: 18px;
+  width: 72px;
+  height: 72px;
+  border-radius: 16px;
   border: 1px solid rgba(28, 36, 48, 0.08);
   background: #f8f2ea;
   object-fit: cover;
@@ -271,38 +223,33 @@
   min-width: 0;
   display: flex;
   flex-direction: column;
-  gap: 2px;
+  gap: 4px;
 }
 
 .style-card-title {
-  font-size: 0.94rem;
+  font-size: 0.9rem;
   font-weight: 800;
   color: #1b2230;
 }
 
 .style-card-role {
-  font-size: 0.78rem;
+  font-size: 0.76rem;
   font-weight: 700;
   color: var(--accent);
-}
-
-.style-card-description {
-  font-size: 0.82rem;
-  line-height: 1.4;
-  color: #5d6572;
 }
 
 .workspace {
   display: grid;
   grid-template-columns: minmax(0, 1.08fr) minmax(0, 0.92fr);
-  gap: 18px;
+  gap: 12px;
+  min-height: 0;
 }
 
 .input-panel,
 .output-panel {
   display: flex;
   flex-direction: column;
-  min-height: 430px;
+  min-height: 0;
 }
 
 .count-pill {
@@ -319,14 +266,14 @@ textarea {
   width: 100%;
   min-height: 0;
   flex: 1;
-  padding: 16px 18px;
+  padding: 14px 16px;
   resize: none;
   border: 1px solid rgba(28, 36, 48, 0.08);
-  border-radius: 20px;
+  border-radius: 18px;
   background: #fcfaf7;
   box-shadow: inset 0 1px 0 rgba(255, 255, 255, 0.92);
-  font-size: 0.96rem;
-  line-height: 1.6;
+  font-size: 0.92rem;
+  line-height: 1.5;
   color: #1b2230;
 }
 
@@ -339,16 +286,12 @@ textarea:focus,
 }
 
 .meta-row {
-  margin-top: 14px;
-}
-
-.meta-note {
-  font-size: 0.84rem;
-  color: #5d6572;
+  margin-top: 10px;
+  justify-content: flex-end;
 }
 
 .submit-button {
-  min-height: 46px;
+  min-height: 42px;
   padding: 0 18px;
   border: none;
   border-radius: 14px;
@@ -378,7 +321,7 @@ textarea:focus,
 .empty-state {
   min-height: 0;
   flex: 1;
-  padding: 18px;
+  padding: 14px;
   border-radius: 20px;
   border: 1px solid rgba(28, 36, 48, 0.08);
   background: #fcfaf7;
@@ -387,13 +330,13 @@ textarea:focus,
 .result {
   overflow: auto;
   white-space: pre-wrap;
-  font-size: 0.96rem;
-  line-height: 1.65;
+  font-size: 0.92rem;
+  line-height: 1.55;
   color: #1b2230;
 }
 
 .result p {
-  margin: 14px 0 0;
+  margin: 10px 0 0;
 }
 
 .result-style {
@@ -416,7 +359,7 @@ textarea:focus,
 .empty-state-title {
   margin: 0 0 8px;
   font-family: 'Newsreader', Georgia, serif;
-  font-size: 1.45rem;
+  font-size: 1.2rem;
   color: #1b2230;
 }
 
@@ -437,25 +380,22 @@ textarea:focus,
 }
 
 @media (max-width: 1080px) {
-  .intro,
-  .workspace {
-    grid-template-columns: 1fr;
-    display: grid;
-  }
-
-  .intro-chips {
-    justify-content: flex-start;
-  }
-
   .style-grid {
     grid-template-columns: repeat(2, minmax(0, 1fr));
+  }
+
+  .workspace {
+    grid-template-columns: 1fr;
   }
 }
 
 @media (max-width: 720px) {
   .page {
+    height: auto;
+    min-height: 100vh;
     padding-left: 18px;
     padding-right: 18px;
+    overflow: visible;
   }
 
   .topbar,
@@ -475,16 +415,16 @@ textarea:focus,
   }
 
   .style-card {
-    grid-template-columns: 56px minmax(0, 1fr);
+    grid-template-columns: 64px minmax(0, 1fr);
   }
 
   .style-portrait {
-    width: 56px;
-    height: 56px;
+    width: 64px;
+    height: 64px;
   }
 
   textarea {
-    min-height: 280px;
+    min-height: 220px;
     resize: vertical;
   }
 
