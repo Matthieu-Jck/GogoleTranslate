@@ -26,11 +26,9 @@
       <div class="panel-header compact">
         <div>
           <p class="section-kicker">{{ copy.sourceTitle }}</p>
-          <h2>{{ copy.sourceStyleLabel }}</h2>
         </div>
 
         <label class="select-wrap">
-          <span class="sr-only">{{ copy.sourceStyleLabel }}</span>
           <select formControlName="sourceStyle">
             <option *ngFor="let style of visibleStyles" [value]="style.code">
               {{ getStyleName(style.code, style.label) }}
@@ -58,11 +56,9 @@
       <div class="panel-header compact">
         <div>
           <p class="section-kicker">{{ copy.outputTitle }}</p>
-          <h2>{{ copy.outputStyleLabel }}</h2>
         </div>
 
         <label class="select-wrap">
-          <span class="sr-only">{{ copy.outputStyleLabel }}</span>
           <select [formControl]="form.controls.targetStyle">
             <option *ngFor="let style of visibleStyles" [value]="style.code">
               {{ getStyleName(style.code, style.label) }}

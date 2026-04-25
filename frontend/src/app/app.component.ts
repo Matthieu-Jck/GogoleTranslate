@@ -16,10 +16,8 @@ interface UiCopy {
   headline: string;
   siteLanguageLabel: string;
   sourceTitle: string;
-  sourceStyleLabel: string;
   sourcePlaceholder: string;
   outputTitle: string;
-  outputStyleLabel: string;
   emptyTitle: string;
   emptyBody: string;
   translate: string;
@@ -56,10 +54,8 @@ const UI_COPY: Record<SiteLanguage, UiCopy> = {
     headline: 'Traduire un texte',
     siteLanguageLabel: 'Langue du site',
     sourceTitle: 'Source',
-    sourceStyleLabel: 'Style source',
-    sourcePlaceholder: 'Collez un mail, un message Slack ou une note...',
+    sourcePlaceholder: 'Quel texte souhaitez-vous traduire ?',
     outputTitle: 'R\u00e9sultat',
-    outputStyleLabel: 'Style r\u00e9sultat',
     emptyTitle: 'Le r\u00e9sultat appara\u00eetra ici.',
     emptyBody: 'Choisissez un style de d\u00e9part et un style d\u2019arriv\u00e9e, puis cliquez sur Traduire.',
     translate: 'Traduire',
@@ -72,10 +68,8 @@ const UI_COPY: Record<SiteLanguage, UiCopy> = {
     headline: 'Translate text',
     siteLanguageLabel: 'Site language',
     sourceTitle: 'Source',
-    sourceStyleLabel: 'Source style',
-    sourcePlaceholder: 'Paste an email, a Slack message, or a note...',
+    sourcePlaceholder: 'What text do you want to translate?',
     outputTitle: 'Result',
-    outputStyleLabel: 'Result style',
     emptyTitle: 'The result will appear here.',
     emptyBody: 'Pick a source style and a result style, then click Translate.',
     translate: 'Translate',
