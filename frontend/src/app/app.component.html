@@ -2,6 +2,7 @@
   <header class="topbar">
     <div class="brand-block">
       <p class="brand">GogoleTranslate</p>
+      <h1 class="page-title">{{ copy.headline }}</h1>
     </div>
 
     <div class="site-language">
@@ -20,43 +21,22 @@
     </div>
   </header>
 
-  <section class="panel persona-panel">
-    <div class="panel-header">
-      <div>
-        <p class="section-kicker">{{ copy.personaKicker }}</p>
-        <h2>{{ copy.personaTitle }}</h2>
-      </div>
-      <div class="selected-badge">{{ selectedStyleArchetype }}</div>
-    </div>
-
-    <div class="style-grid">
-      <button
-        *ngFor="let style of visibleStyles; trackBy: trackStyle"
-        type="button"
-        class="style-card"
-        [class.active]="form.controls.style.value === style.code"
-        [style.--accent]="getStyleAccent(style)"
-        [attr.aria-pressed]="form.controls.style.value === style.code"
-        (click)="selectStyle(style.code)"
-      >
-        <img class="style-portrait" [src]="getStylePortrait(style)" alt="" />
-
-        <span class="style-copy">
-          <span class="style-card-title">{{ getStyleName(style) }}</span>
-          <span class="style-card-role">{{ getStyleArchetype(style) }}</span>
-        </span>
-      </button>
-    </div>
-  </section>
-
   <section class="workspace">
     <form class="panel input-panel" [formGroup]="form" (ngSubmit)="submit()">
       <div class="panel-header compact">
         <div>
-          <p class="section-kicker">{{ copy.sourceKicker }}</p>
-          <h2>{{ copy.sourceTitle }}</h2>
+          <p class="section-kicker">{{ copy.sourceTitle }}</p>
+          <h2>{{ copy.sourceStyleLabel }}</h2>
         </div>
-        <span class="count-pill">{{ form.controls.text.value.length }}/{{ maxCharacters }}</span>
+
+        <label class="select-wrap">
+          <span class="sr-only">{{ copy.sourceStyleLabel }}</span>
+          <select formControlName="sourceStyle">
+            <option *ngFor="let style of visibleStyles" [value]="style.code">
+              {{ getStyleName(style.code, style.label) }}
+            </option>
+          </select>
+        </label>
       </div>
 
       <textarea
@@ -67,6 +47,7 @@
       ></textarea>
 
       <div class="meta-row">
+        <span class="count-pill">{{ form.controls.text.value.length }}/{{ maxCharacters }}</span>
         <button class="submit-button" type="submit" [disabled]="isLoading">
           {{ isLoading ? copy.translating : copy.translate }}
         </button>
@@ -76,10 +57,18 @@
     <section class="panel output-panel">
       <div class="panel-header compact">
         <div>
-          <p class="section-kicker">{{ copy.outputKicker }}</p>
-          <h2>{{ copy.outputTitle }}</h2>
+          <p class="section-kicker">{{ copy.outputTitle }}</p>
+          <h2>{{ copy.outputStyleLabel }}</h2>
         </div>
-        <div class="model-badge" *ngIf="result">{{ copy.modelLabel(result.model) }}</div>
+
+        <label class="select-wrap">
+          <span class="sr-only">{{ copy.outputStyleLabel }}</span>
+          <select [formControl]="form.controls.targetStyle">
+            <option *ngFor="let style of visibleStyles" [value]="style.code">
+              {{ getStyleName(style.code, style.label) }}
+            </option>
+          </select>
+        </label>
       </div>
 
       <div class="result" *ngIf="result; else emptyState">
@@ -96,6 +85,8 @@
           <p>{{ copy.emptyBody }}</p>
         </div>
       </ng-template>
+
+      <div class="model-badge" *ngIf="result">{{ copy.modelLabel(result.model) }}</div>
     </section>
   </section>
 

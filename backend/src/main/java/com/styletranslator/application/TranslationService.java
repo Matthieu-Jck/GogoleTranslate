@@ -18,21 +18,33 @@ public class TranslationService {
     }
 
     public TranslationResult translate(TranslationCommand command) {
-        StylePreset stylePreset = stylePromptRegistry.findByCode(command.styleCode());
-        String systemPrompt = stylePromptRegistry.buildSystemPrompt(stylePreset);
+        StylePreset sourceStylePreset = stylePromptRegistry.findByCode(command.sourceStyleCode());
+        StylePreset targetStylePreset = stylePromptRegistry.findByCode(command.targetStyleCode());
+
+        if (sourceStylePreset == targetStylePreset) {
+            return new TranslationResult(
+                    command.text(),
+                    command.text(),
+                    targetStylePreset.code(),
+                    targetStylePreset.label(),
+                    "identity-pass-through"
+            );
+        }
+
+        String systemPrompt = stylePromptRegistry.buildSystemPrompt(sourceStylePreset, targetStylePreset);
 
         LlmResult llmResult = llmClient.complete(new LlmPrompt(
                 systemPrompt,
                 command.text(),
-                stylePreset.code(),
-                stylePreset.label()
+                targetStylePreset.code(),
+                targetStylePreset.label()
         ));
 
         return new TranslationResult(
                 command.text(),
                 llmResult.content(),
-                stylePreset.code(),
-                stylePreset.label(),
+                targetStylePreset.code(),
+                targetStylePreset.label(),
                 llmResult.model()
         );
     }

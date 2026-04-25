@@ -8,7 +8,10 @@ public record TranslateRequest(
         @Size(max = 5000, message = "text must not exceed 5000 characters")
         String text,
 
-        @NotBlank(message = "style is required")
-        String style
+        @NotBlank(message = "sourceStyle is required")
+        String sourceStyle,
+
+        @NotBlank(message = "targetStyle is required")
+        String targetStyle
 ) {
 }

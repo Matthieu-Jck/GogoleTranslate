@@ -48,7 +48,7 @@ public class TranslationController {
     @PostMapping("/translate")
     public ResponseEntity<TranslateResponse> translate(@Valid @RequestBody TranslateRequest request) {
         TranslationResult result = translationService.translate(
-                new TranslationCommand(request.text(), request.style())
+                new TranslationCommand(request.text(), request.sourceStyle(), request.targetStyle())
         );
 
         TranslateResponse response = new TranslateResponse(

@@ -5,6 +5,12 @@ import java.util.Locale;
 import java.util.Optional;
 
 public enum StylePreset {
+    NORMAL(
+            "normal",
+            "Normal",
+            "Neutral, everyday language with no special persona.",
+            "Use direct, clear, natural language with no exaggerated persona or caricature."
+    ),
     CORPORATE(
             "corporate",
             "Corporate",

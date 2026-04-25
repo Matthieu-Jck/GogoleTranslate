@@ -1,4 +1,4 @@
-import { CommonModule } from '@angular/common';
+import { CommonModule, DOCUMENT } from '@angular/common';
 import { Component, OnInit, inject } from '@angular/core';
 import { FormBuilder, ReactiveFormsModule, Validators } from '@angular/forms';
 import { finalize } from 'rxjs';
@@ -9,21 +9,17 @@ type SiteLanguage = 'fr' | 'en';
 
 interface SiteLanguageOption {
   code: SiteLanguage;
-  label: string;
   shortLabel: string;
 }
 
 interface UiCopy {
   headline: string;
   siteLanguageLabel: string;
-  personaKicker: string;
-  personaTitle: string;
-  personaPlaceholder: string;
-  sourceKicker: string;
   sourceTitle: string;
+  sourceStyleLabel: string;
   sourcePlaceholder: string;
-  outputKicker: string;
   outputTitle: string;
+  outputStyleLabel: string;
   emptyTitle: string;
   emptyBody: string;
   translate: string;
@@ -33,15 +29,14 @@ interface UiCopy {
   modelLabel: (model: string) => string;
 }
 
-interface StylePersonaConfig {
-  portrait: string;
-  accent: string;
-  label: Record<SiteLanguage, string>;
-  archetype: Record<SiteLanguage, string>;
+interface LocalizedStyleLabel {
+  fr: string;
+  en: string;
 }
 
 const SITE_LANGUAGE_STORAGE_KEY = 'gogoletranslate-site-language';
 const STYLE_ORDER = [
+  'normal',
   'corporate',
   'politician',
   'tech-startup',
@@ -52,43 +47,37 @@ const STYLE_ORDER = [
 const KNOWN_STYLE_CODES = new Set<string>(STYLE_ORDER);
 
 const SITE_LANGUAGES: SiteLanguageOption[] = [
-  { code: 'fr', label: 'Francais', shortLabel: 'FR' },
-  { code: 'en', label: 'English', shortLabel: 'EN' }
+  { code: 'fr', shortLabel: 'FR' },
+  { code: 'en', shortLabel: 'EN' }
 ];
 
 const UI_COPY: Record<SiteLanguage, UiCopy> = {
   fr: {
-    headline: 'Translate',
+    headline: 'Traduire un texte',
     siteLanguageLabel: 'Langue du site',
-    personaKicker: 'Casting',
-    personaTitle: 'Qui parle ?',
-    personaPlaceholder: 'Choisis un personnage',
-    sourceKicker: 'Source',
-    sourceTitle: 'A traduire',
-    sourcePlaceholder: 'Mail sec, note Slack, message passif-agressif...',
-    outputKicker: 'Sortie',
-    outputTitle: 'Resultat',
-    emptyTitle: 'Rien pour l\'instant.',
-    emptyBody: 'Choisis un personnage puis clique sur Translate.',
-    translate: 'Translate',
-    translating: 'Translating...',
-    resultReady: 'Pret',
-    errorTranslation: 'La traduction a echoue. Verifie le backend ou la cle API.',
-    modelLabel: (model) => `Modele ${model}`
+    sourceTitle: 'Source',
+    sourceStyleLabel: 'Style source',
+    sourcePlaceholder: 'Collez un mail, un message Slack ou une note...',
+    outputTitle: 'R\u00e9sultat',
+    outputStyleLabel: 'Style r\u00e9sultat',
+    emptyTitle: 'Le r\u00e9sultat appara\u00eetra ici.',
+    emptyBody: 'Choisissez un style de d\u00e9part et un style d\u2019arriv\u00e9e, puis cliquez sur Traduire.',
+    translate: 'Traduire',
+    translating: 'Traduction...',
+    resultReady: 'Pr\u00eat',
+    errorTranslation: 'La traduction a \u00e9chou\u00e9. V\u00e9rifiez le backend ou la cl\u00e9 API.',
+    modelLabel: (model) => `Mod\u00e8le ${model}`
   },
   en: {
-    headline: 'Translate',
+    headline: 'Translate text',
     siteLanguageLabel: 'Site language',
-    personaKicker: 'Casting',
-    personaTitle: 'Who is talking?',
-    personaPlaceholder: 'Pick a character',
-    sourceKicker: 'Source',
-    sourceTitle: 'To translate',
-    sourcePlaceholder: 'Awkward email, tense Slack note, passive-aggressive message...',
-    outputKicker: 'Output',
+    sourceTitle: 'Source',
+    sourceStyleLabel: 'Source style',
+    sourcePlaceholder: 'Paste an email, a Slack message, or a note...',
     outputTitle: 'Result',
-    emptyTitle: 'Nothing yet.',
-    emptyBody: 'Pick a character and click Translate.',
+    outputStyleLabel: 'Result style',
+    emptyTitle: 'The result will appear here.',
+    emptyBody: 'Pick a source style and a result style, then click Translate.',
     translate: 'Translate',
     translating: 'Translating...',
     resultReady: 'Ready',
@@ -97,92 +86,14 @@ const UI_COPY: Record<SiteLanguage, UiCopy> = {
   }
 };
 
-const GENERIC_PERSONA: StylePersonaConfig = {
-  portrait: '/personas/generic.svg',
-  accent: '#7c6e55',
-  label: {
-    fr: 'Personnage mystere',
-    en: 'Mystery character'
-  },
-  archetype: {
-    fr: 'Version alternative',
-    en: 'Alternate version'
-  }
-};
-
-const STYLE_PERSONAS: Record<string, StylePersonaConfig> = {
-  corporate: {
-    portrait: '/personas/corporate.svg',
-    accent: '#8c5b32',
-    label: {
-      fr: 'Corporate',
-      en: 'Corporate'
-    },
-    archetype: {
-      fr: 'PDG sous cafeine',
-      en: 'Caffeinated CEO'
-    }
-  },
-  politician: {
-    portrait: '/personas/politician.svg',
-    accent: '#8f4f4c',
-    label: {
-      fr: 'Politique',
-      en: 'Political'
-    },
-    archetype: {
-      fr: 'Ministre en campagne',
-      en: 'Campaign minister'
-    }
-  },
-  'tech-startup': {
-    portrait: '/personas/tech-startup.svg',
-    accent: '#356a69',
-    label: {
-      fr: 'Startup',
-      en: 'Startup'
-    },
-    archetype: {
-      fr: 'Fondateur en hoodie',
-      en: 'Hoodie founder'
-    }
-  },
-  legal: {
-    portrait: '/personas/legal.svg',
-    accent: '#4e5872',
-    label: {
-      fr: 'Juridique',
-      en: 'Legal'
-    },
-    archetype: {
-      fr: 'Avocat tres prudent',
-      en: 'Cautious lawyer'
-    }
-  },
-  finance: {
-    portrait: '/personas/finance.svg',
-    accent: '#2f6c48',
-    label: {
-      fr: 'Finance',
-      en: 'Finance'
-    },
-    archetype: {
-      fr: 'Trader sous Excel',
-      en: 'Spreadsheet trader'
-    }
-  },
-  pretentious: {
-    portrait: '/personas/pretentious.svg',
-    accent: '#8b5a7d',
-    label: {
-      fr: 'Artistique',
-      en: 'Artsy'
-    },
-    archetype: {
-      fr: 'Babos inspire',
-      en: 'Inspired bohemian'
-    }
-  }
+const STYLE_LABELS: Record<string, LocalizedStyleLabel> = {
+  normal: { fr: 'Normal', en: 'Normal' },
+  corporate: { fr: 'Corporate', en: 'Corporate' },
+  politician: { fr: 'Politique', en: 'Political' },
+  'tech-startup': { fr: 'Startup', en: 'Startup' },
+  legal: { fr: 'Juridique', en: 'Legal' },
+  finance: { fr: 'Finance', en: 'Finance' },
+  pretentious: { fr: 'Artistique', en: 'Artsy' }
 };
 
 @Component({
@@ -193,47 +104,26 @@ const STYLE_PERSONAS: Record<string, StylePersonaConfig> = {
   styleUrls: ['./app.component.css']
 })
 export class AppComponent implements OnInit {
+  private readonly document = inject(DOCUMENT);
   private readonly formBuilder = inject(FormBuilder);
   private readonly translationApi = inject(TranslationApiService);
 
   readonly maxCharacters = 5000;
   readonly siteLanguages = SITE_LANGUAGES;
   readonly fallbackStyles: StyleOption[] = [
-    {
-      code: 'corporate',
-      label: 'Corporate',
-      description: 'Boardroom-clean, measured and professional.'
-    },
-    {
-      code: 'politician',
-      label: 'Politician',
-      description: 'Public-facing, reassuring, persuasive and slightly evasive.'
-    },
-    {
-      code: 'tech-startup',
-      label: 'Tech Startup',
-      description: 'Fast, ambitious, product-obsessed and full of momentum.'
-    },
-    {
-      code: 'legal',
-      label: 'Legal',
-      description: 'Formal, precise, cautious and clause-heavy.'
-    },
-    {
-      code: 'finance',
-      label: 'Finance',
-      description: 'Analytical, numbers-aware, risk-conscious and market-savvy.'
-    },
-    {
-      code: 'pretentious',
-      label: 'Pretentious',
-      description: 'Lofty, overinterpreted and dramatically artsy.'
-    }
+    { code: 'normal', label: 'Normal', description: 'Neutral, everyday language.' },
+    { code: 'corporate', label: 'Corporate', description: 'Boardroom-clean, measured and professional.' },
+    { code: 'politician', label: 'Politician', description: 'Public-facing, reassuring, persuasive and slightly evasive.' },
+    { code: 'tech-startup', label: 'Tech Startup', description: 'Fast, ambitious, product-obsessed and full of momentum.' },
+    { code: 'legal', label: 'Legal', description: 'Formal, precise, cautious and clause-heavy.' },
+    { code: 'finance', label: 'Finance', description: 'Analytical, numbers-aware, risk-conscious and market-savvy.' },
+    { code: 'pretentious', label: 'Pretentious', description: 'Lofty, overinterpreted and dramatically artsy.' }
   ];
 
   readonly form = this.formBuilder.nonNullable.group({
     text: ['', [Validators.required, Validators.maxLength(this.maxCharacters)]],
-    style: ['corporate', Validators.required]
+    sourceStyle: ['normal', Validators.required],
+    targetStyle: ['corporate', Validators.required]
   });
 
   styles: StyleOption[] = [];
@@ -244,6 +134,11 @@ export class AppComponent implements OnInit {
 
   ngOnInit(): void {
     this.restoreSiteLanguage();
+    this.applySiteLanguage();
+    this.form.valueChanges.subscribe(() => {
+      this.result = null;
+      this.hasError = false;
+    });
     this.loadStyles();
   }
 
@@ -255,58 +150,22 @@ export class AppComponent implements OnInit {
     return this.styles.length > 0 ? this.styles : this.fallbackStyles;
   }
 
-  get selectedStyle(): StyleOption | null {
-    return this.visibleStyles.find((style) => style.code === this.form.controls.style.value) ?? null;
-  }
-
-  get selectedStyleName(): string {
-    return this.selectedStyle ? this.getStyleName(this.selectedStyle) : this.copy.personaPlaceholder;
-  }
-
-  get selectedStyleArchetype(): string {
-    return this.selectedStyle ? this.getStyleArchetype(this.selectedStyle) : this.copy.personaPlaceholder;
-  }
-
   get resultStyleName(): string {
     if (!this.result) {
       return '';
     }
 
-    return this.getStyleName({
-      code: this.result.styleCode,
-      label: this.result.styleLabel,
-      description: ''
-    });
+    return this.getStyleName(this.result.styleCode, this.result.styleLabel);
   }
 
   setSiteLanguage(language: SiteLanguage): void {
     this.siteLanguage = language;
     this.persistSiteLanguage();
+    this.applySiteLanguage();
   }
 
-  selectStyle(styleCode: string): void {
-    this.form.controls.style.setValue(styleCode);
-  }
-
-  trackStyle(_index: number, style: StyleOption): string {
-    return style.code;
-  }
-
-  getStyleName(style: StyleOption): string {
-    const persona = this.getStylePersona(style.code);
-    return persona.label[this.siteLanguage] || style.label;
-  }
-
-  getStyleArchetype(style: StyleOption): string {
-    return this.getStylePersona(style.code).archetype[this.siteLanguage];
-  }
-
-  getStylePortrait(style: StyleOption): string {
-    return this.getStylePersona(style.code).portrait;
-  }
-
-  getStyleAccent(style: StyleOption): string {
-    return this.getStylePersona(style.code).accent;
+  getStyleName(styleCode: string, fallbackLabel?: string): string {
+    return STYLE_LABELS[styleCode]?.[this.siteLanguage] ?? fallbackLabel ?? styleCode;
   }
 
   submit(): void {
@@ -332,8 +191,8 @@ export class AppComponent implements OnInit {
       });
   }
 
-  private getStylePersona(styleCode: string): StylePersonaConfig {
-    return STYLE_PERSONAS[styleCode] ?? GENERIC_PERSONA;
+  private applySiteLanguage(): void {
+    this.document.documentElement.lang = this.siteLanguage;
   }
 
   private restoreSiteLanguage(): void {
@@ -361,20 +220,26 @@ export class AppComponent implements OnInit {
       next: (styles) => {
         const sortedStyles = this.sortStyles(styles);
         this.styles = sortedStyles.length > 0 ? sortedStyles : this.fallbackStyles;
-        this.ensureValidSelectedStyle();
+        this.ensureValidSelectedStyles();
       },
       error: () => {
         this.styles = this.sortStyles(this.fallbackStyles);
-        this.ensureValidSelectedStyle();
+        this.ensureValidSelectedStyles();
       }
     });
   }
 
-  private ensureValidSelectedStyle(): void {
-    const selectedStyleCode = this.form.controls.style.value;
+  private ensureValidSelectedStyles(): void {
+    const sourceStyle = this.form.controls.sourceStyle.value;
+    const targetStyle = this.form.controls.targetStyle.value;
+    const availableCodes = new Set(this.visibleStyles.map((style) => style.code));
 
-    if (this.visibleStyles.length > 0 && !this.visibleStyles.some((style) => style.code === selectedStyleCode)) {
-      this.form.patchValue({ style: this.visibleStyles[0].code });
+    if (!availableCodes.has(sourceStyle)) {
+      this.form.patchValue({ sourceStyle: 'normal' });
+    }
+
+    if (!availableCodes.has(targetStyle)) {
+      this.form.patchValue({ targetStyle: 'corporate' });
     }
   }
 

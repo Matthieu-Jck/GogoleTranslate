@@ -14,10 +14,23 @@ class TranslationServiceTest {
         LlmClient fakeClient = prompt -> new LlmResult("Translated with " + prompt.styleCode(), "test-model");
         TranslationService service = new TranslationService(registry, fakeClient);
 
-        TranslationResult result = service.translate(new TranslationCommand("Hello world", "finance"));
+        TranslationResult result = service.translate(new TranslationCommand("Hello world", "normal", "finance"));
 
         assertThat(result.translatedText()).isEqualTo("Translated with finance");
         assertThat(result.styleLabel()).isEqualTo("Finance");
         assertThat(result.model()).isEqualTo("test-model");
+    }
+
+    @Test
+    void shouldReturnOriginalTextWhenSourceAndTargetStylesMatch() {
+        StylePromptRegistry registry = new StylePromptRegistry();
+        LlmClient fakeClient = prompt -> new LlmResult("Should not be used", "test-model");
+        TranslationService service = new TranslationService(registry, fakeClient);
+
+        TranslationResult result = service.translate(new TranslationCommand("Hello world", "normal", "normal"));
+
+        assertThat(result.translatedText()).isEqualTo("Hello world");
+        assertThat(result.styleLabel()).isEqualTo("Normal");
+        assertThat(result.model()).isEqualTo("identity-pass-through");
     }
 }

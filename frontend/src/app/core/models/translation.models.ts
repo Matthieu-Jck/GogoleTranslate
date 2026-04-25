@@ -1,6 +1,7 @@
 export interface TranslateRequest {
   text: string;
-  style: string;
+  sourceStyle: string;
+  targetStyle: string;
 }
 
 export interface TranslateResponse {

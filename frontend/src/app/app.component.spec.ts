@@ -11,7 +11,10 @@ describe('AppComponent', () => {
         {
           provide: TranslationApiService,
           useValue: {
-            getStyles: () => of([{ code: 'corporate', label: 'Corporate', description: 'Test' }]),
+            getStyles: () => of([
+              { code: 'normal', label: 'Normal', description: 'Test' },
+              { code: 'corporate', label: 'Corporate', description: 'Test' }
+            ]),
             translate: () => of({
               originalText: 'Hello',
               translatedText: 'Corporate hello',
