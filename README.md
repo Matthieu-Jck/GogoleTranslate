@@ -20,16 +20,6 @@ MVP full-stack pour transformer un texte dans un style cible via une API LLM.
 - adaptateur LLM configurable
 - mode mock pour demarrer sans cle API
 
-## Flux de donnees
-
-1. Angular charge les styles via `GET /api/v1/styles`
-2. L'utilisateur envoie le texte et le style via `POST /api/v1/translate`
-3. Spring Boot valide la requete
-4. Le service choisit le prompt du style cible
-5. L'adaptateur LLM appelle l'API externe
-6. Le backend renvoie le texte reformule au frontend
-7. Angular affiche le resultat dans le panneau de sortie
-
 ## Endpoints REST
 
 - `GET /api/v1/styles`
@@ -107,22 +97,6 @@ Copier `.env.example` vers `.env` puis renseigner:
 - `LLM_BASE_URL`
 - `LLM_CHAT_PATH`
 
-Si `GROQ_API_KEY` est vide, le backend renvoie une reponse mock utile pour le MVP.
-
-## Deploiement GitHub Actions + Fly.io
-
-Secrets GitHub a configurer dans le repo:
-
-- `FLY_API_TOKEN`
-- `GROQ_API_KEY`
-
-Optionnel si tu preferes des tokens Fly separes par app:
-
-- `FLY_API_TOKEN_BACKEND`
-- `FLY_API_TOKEN_FRONTEND`
-- `FLY_API_KEY_BACKEND`
-- `FLY_API_KEY_FRONTEND`
-
 Workflows:
 
 - [ci.yml](<C:\Users\matth\Desktop\Projets\GogoleTranslate\.github\workflows\ci.yml>)
@@ -135,8 +109,6 @@ Configs Fly:
 - [frontend/fly.toml](<C:\Users\matth\Desktop\Projets\GogoleTranslate\frontend\fly.toml>)
 
 En production, le frontend passe par un proxy Nginx vers le backend Fly, ce qui evite les appels cross-origin depuis le navigateur.
-
-Si tes apps Fly portent d'autres noms que `gogoletranslate-api` et `gogoletranslate-web`, il faut mettre a jour:
 
 - `app = ...` dans les deux `fly.toml`
 - `API_PROXY_PASS` dans [frontend/fly.toml](<C:\Users\matth\Desktop\Projets\GogoleTranslate\frontend\fly.toml>)
