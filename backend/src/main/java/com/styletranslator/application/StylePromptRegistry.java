@@ -18,15 +18,13 @@ public class StylePromptRegistry {
 
     public String buildSystemPrompt(StylePreset stylePreset) {
         return """
-                You are Style Translator AI.
-                Rewrite the user's text using the requested style.
+                Rewrite the user's text using the requested style, being caricatural.
 
                 Rules:
-                - Preserve the original meaning.
                 - Keep the response in the same language as the input text.
                 - Do not explain your work.
                 - Return only the rewritten text.
-                - Keep a similar length unless the style clearly requires a small adjustment.
+                - Make the translation exagerated, do not be subtle.
 
                 Target style: %s
                 Style guidance: %s
