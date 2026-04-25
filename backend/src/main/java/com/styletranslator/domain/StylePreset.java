@@ -8,38 +8,38 @@ public enum StylePreset {
     CORPORATE(
             "corporate",
             "Corporate",
-            "Ton professionnel, structuré et diplomatique.",
-            "Use polished business language, clear structure and neutral confidence."
+            "Boardroom-clean, measured and professional.",
+            "Use polished business language, clear structure, and diplomatic confidence."
     ),
     POLITICIAN(
             "politician",
-            "Politicien",
-            "Ton rassembleur, prudent, convaincant et parfois evasif.",
-            "Sound persuasive, reassuring, public-facing and slightly strategic."
-    ),
-    LEGAL(
-            "legal",
-            "Juridique",
-            "Ton formel, precis et rigoureux.",
-            "Use formal legal phrasing, precise wording and explicit conditions."
-    ),
-    FANTASY(
-            "fantasy",
-            "Fantasy",
-            "Ton epique, imaginaire et narratif.",
-            "Use evocative fantasy imagery, a sense of wonder and elevated diction."
+            "Politician",
+            "Public-facing, reassuring, persuasive and slightly evasive.",
+            "Sound persuasive, careful, reassuring, and strategically vague when useful."
     ),
     TECH_STARTUP(
             "tech-startup",
-            "Tech startup",
-            "Ton dynamique, produit, innovation et croissance.",
-            "Sound energetic, product-driven, modern and investor-friendly."
+            "Tech Startup",
+            "Fast, ambitious, product-obsessed and full of momentum.",
+            "Use energetic startup language, product framing, innovation cues, and growth-minded optimism."
     ),
-    ARTISTIC(
-            "artistic",
-            "Artistique",
-            "Ton poetique, sensible et image.",
-            "Use expressive and sensory language with a creative rhythm."
+    LEGAL(
+            "legal",
+            "Legal",
+            "Formal, precise, cautious and clause-heavy.",
+            "Use formal legal phrasing, exact wording, explicit conditions, and controlled nuance."
+    ),
+    FINANCE(
+            "finance",
+            "Finance",
+            "Analytical, numbers-aware, risk-conscious and market-savvy.",
+            "Sound like a finance memo with clarity on performance, risk, upside, and downside."
+    ),
+    PRETENTIOUS(
+            "pretentious",
+            "Pretentious",
+            "Lofty, overinterpreted and dramatically artsy.",
+            "Turn ordinary statements into grand reflections about meaning, symbolism, soul, and hidden resonance."
     );
 
     private final String code;

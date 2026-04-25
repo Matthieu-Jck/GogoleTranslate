@@ -1,53 +1,107 @@
 <main class="page">
-  <section class="hero">
-    <div>
+  <section class="hero-shell">
+    <div class="hero-copy">
       <p class="eyebrow">Style Translator AI</p>
-      <h1>Traduis un texte dans un autre style.</h1>
+      <h1>Same meaning. Entirely different social costume.</h1>
       <p class="subtitle">
-        Meme idee, autre ton. Choisis un style, colle ton texte, laisse le moteur le reformuler.
+        Shift a message from boardroom polish to gallery-opening nonsense without losing the original idea.
       </p>
+
+      <div class="hero-metrics">
+        <article class="metric-card">
+          <span class="metric-value">6</span>
+          <span class="metric-label">Voices ready</span>
+        </article>
+        <article class="metric-card">
+          <span class="metric-value">1</span>
+          <span class="metric-label">Meaning preserved</span>
+        </article>
+        <article class="metric-card metric-card-wide">
+          <span class="metric-value">Same language</span>
+          <span class="metric-copy">The rewrite keeps the language of the original text while changing the tone.</span>
+        </article>
+      </div>
     </div>
+
+    <aside class="hero-card">
+      <p class="section-kicker">Current voice</p>
+      <h2>{{ selectedStyle?.label || 'Corporate' }}</h2>
+      <p>
+        {{ selectedStyle?.description || 'Choose a voice to see how the rewrite will behave.' }}
+      </p>
+      <div class="hero-pill-row">
+        <span class="hero-pill">Sharper tone</span>
+        <span class="hero-pill">Same idea</span>
+        <span class="hero-pill">Fast rewrite</span>
+      </div>
+    </aside>
   </section>
 
-  <section class="translator">
+  <section class="workspace">
     <form class="panel input-panel" [formGroup]="form" (ngSubmit)="submit()">
-      <div class="toolbar">
-        <label for="style">Style</label>
-        <select id="style" formControlName="style">
-          <option *ngFor="let style of styles" [value]="style.code">
-            {{ style.label }}
-          </option>
-        </select>
+      <div class="panel-header">
+        <div>
+          <p class="section-kicker">Voice selector</p>
+          <h2>Choose the persona</h2>
+        </div>
+        <div class="selected-badge">{{ selectedStyle?.label || 'Select a voice' }}</div>
+      </div>
+
+      <div class="style-grid">
+        <button
+          *ngFor="let style of styles"
+          type="button"
+          class="style-card"
+          [class.active]="form.controls.style.value === style.code"
+          [attr.aria-pressed]="form.controls.style.value === style.code"
+          (click)="selectStyle(style.code)"
+        >
+          <span class="style-card-title">{{ style.label }}</span>
+          <span class="style-card-description">{{ style.description }}</span>
+        </button>
+      </div>
+
+      <div class="field-header">
+        <label for="text">Your text</label>
+        <span>{{ maxCharacters }} character max</span>
       </div>
 
       <textarea
+        id="text"
         formControlName="text"
         rows="14"
-        placeholder="Entre ton texte ici..."
+        placeholder="Paste an email, paragraph, note, or mini-rant..."
       ></textarea>
 
       <div class="meta-row">
-        <span>{{ form.controls.text.value.length }}/5000</span>
-        <button type="submit" [disabled]="isLoading">
-          {{ isLoading ? 'Traduction...' : 'Traduire' }}
+        <span>{{ form.controls.text.value.length }}/{{ maxCharacters }} characters</span>
+        <button class="submit-button" type="submit" [disabled]="isLoading">
+          {{ isLoading ? 'Rewriting...' : 'Rewrite text' }}
         </button>
       </div>
     </form>
 
     <section class="panel output-panel">
-      <div class="toolbar">
-        <span>Resultat</span>
-        <span *ngIf="result">Modele: {{ result.model }}</span>
+      <div class="panel-header">
+        <div>
+          <p class="section-kicker">Output</p>
+          <h2>Rewritten version</h2>
+        </div>
+        <div class="model-badge" *ngIf="result">Model {{ result.model }}</div>
       </div>
 
       <div class="result" *ngIf="result; else emptyState">
-        <h2>{{ result.styleLabel }}</h2>
+        <div class="result-meta">
+          <span class="result-style">{{ result.styleLabel }}</span>
+          <span class="result-state">Ready to copy</span>
+        </div>
         <p>{{ result.translatedText }}</p>
       </div>
 
       <ng-template #emptyState>
         <div class="empty-state">
-          <p>Le texte transforme apparaitra ici.</p>
+          <p class="empty-state-title">Your transformed text will appear here.</p>
+          <p>Pick a voice, drop in a source text, and the rewritten version will land in this panel.</p>
         </div>
       </ng-template>
     </section>

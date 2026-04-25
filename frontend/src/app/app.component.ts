@@ -15,9 +15,10 @@ import { TranslationApiService } from './core/services/translation-api.service';
 export class AppComponent implements OnInit {
   private readonly formBuilder = inject(FormBuilder);
   private readonly translationApi = inject(TranslationApiService);
+  readonly maxCharacters = 5000;
 
   readonly form = this.formBuilder.nonNullable.group({
-    text: ['', [Validators.required, Validators.maxLength(5000)]],
+    text: ['', [Validators.required, Validators.maxLength(this.maxCharacters)]],
     style: ['corporate', Validators.required]
   });
 
@@ -28,6 +29,14 @@ export class AppComponent implements OnInit {
 
   ngOnInit(): void {
     this.loadStyles();
+  }
+
+  get selectedStyle(): StyleOption | null {
+    return this.styles.find((style) => style.code === this.form.controls.style.value) ?? null;
+  }
+
+  selectStyle(styleCode: string): void {
+    this.form.controls.style.setValue(styleCode);
   }
 
   submit(): void {
@@ -48,7 +57,7 @@ export class AppComponent implements OnInit {
           this.result = response;
         },
         error: () => {
-          this.errorMessage = 'La traduction a echoue. Verifie la configuration du backend ou la cle LLM.';
+          this.errorMessage = 'Translation failed. Check the backend configuration or the LLM API key.';
         }
       });
   }
@@ -57,12 +66,14 @@ export class AppComponent implements OnInit {
     this.translationApi.getStyles().subscribe({
       next: (styles) => {
         this.styles = styles;
-        if (styles.length > 0) {
+        const selectedStyleCode = this.form.controls.style.value;
+
+        if (styles.length > 0 && !styles.some((style) => style.code === selectedStyleCode)) {
           this.form.patchValue({ style: styles[0].code });
         }
       },
       error: () => {
-        this.errorMessage = 'Impossible de charger les styles disponibles.';
+        this.errorMessage = 'Unable to load the available styles.';
       }
     });
   }
