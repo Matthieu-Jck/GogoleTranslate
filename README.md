@@ -120,6 +120,8 @@ Optionnel si tu preferes des tokens Fly separes par app:
 
 - `FLY_API_TOKEN_BACKEND`
 - `FLY_API_TOKEN_FRONTEND`
+- `FLY_API_KEY_BACKEND`
+- `FLY_API_KEY_FRONTEND`
 
 Workflows:
 
