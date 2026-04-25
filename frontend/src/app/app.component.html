@@ -1,89 +1,120 @@
 <main class="page">
-  <section class="hero-shell">
-    <div class="hero-copy">
-      <p class="eyebrow">Style Translator AI</p>
-      <h1>Rewrite the text. Keep the meaning.</h1>
-      <p class="subtitle">
-        Choose a tone, paste your text, and get a rewrite in the same language.
-      </p>
+  <header class="topbar">
+    <div class="brand-block">
+      <p class="brand">GogoleTranslate</p>
+      <p class="brand-note">{{ copy.brandNote }}</p>
     </div>
 
-    <div class="hero-status">
-      <span class="hero-chip">{{ styles.length || fallbackStyles.length }} styles</span>
-      <span class="hero-chip">{{ selectedStyle?.label || 'Corporate' }}</span>
-      <span class="hero-chip">Same language</span>
+    <div class="site-language">
+      <span class="site-language-label">{{ copy.siteLanguageLabel }}</span>
+      <div class="language-toggle" role="group" [attr.aria-label]="copy.siteLanguageLabel">
+        <button
+          *ngFor="let language of siteLanguages"
+          type="button"
+          class="language-button"
+          [class.active]="siteLanguage === language.code"
+          (click)="setSiteLanguage(language.code)"
+        >
+          {{ language.shortLabel }}
+        </button>
+      </div>
+    </div>
+  </header>
+
+  <section class="intro">
+    <div class="intro-copy">
+      <p class="eyebrow">{{ copy.eyebrow }}</p>
+      <h1>{{ copy.headline }}</h1>
+      <p class="subtitle">{{ copy.subtitle }}</p>
+    </div>
+
+    <div class="intro-chips">
+      <span class="chip">{{ copy.stylesChip(visibleStyles.length) }}</span>
+      <span class="chip chip-selected">{{ selectedStyleName }}</span>
+      <span class="chip">{{ copy.sameLanguage }}</span>
+    </div>
+  </section>
+
+  <section class="panel persona-panel">
+    <div class="panel-header">
+      <div>
+        <p class="section-kicker">{{ copy.personaKicker }}</p>
+        <h2>{{ copy.personaTitle }}</h2>
+      </div>
+      <div class="selected-badge">{{ selectedStyleArchetype }}</div>
+    </div>
+
+    <div class="style-grid">
+      <button
+        *ngFor="let style of visibleStyles; trackBy: trackStyle"
+        type="button"
+        class="style-card"
+        [class.active]="form.controls.style.value === style.code"
+        [style.--accent]="getStyleAccent(style)"
+        [attr.aria-pressed]="form.controls.style.value === style.code"
+        (click)="selectStyle(style.code)"
+      >
+        <img class="style-portrait" [src]="getStylePortrait(style)" alt="" />
+
+        <span class="style-copy">
+          <span class="style-card-title">{{ getStyleName(style) }}</span>
+          <span class="style-card-role">{{ getStyleArchetype(style) }}</span>
+          <span class="style-card-description">{{ getStyleTeaser(style) }}</span>
+        </span>
+      </button>
     </div>
   </section>
 
   <section class="workspace">
     <form class="panel input-panel" [formGroup]="form" (ngSubmit)="submit()">
-      <div class="panel-header">
+      <div class="panel-header compact">
         <div>
-          <p class="section-kicker">Voice selector</p>
-          <h2>Choose the tone</h2>
+          <p class="section-kicker">{{ copy.sourceKicker }}</p>
+          <h2>{{ copy.sourceTitle }}</h2>
         </div>
-        <div class="selected-badge">{{ selectedStyle?.label || 'Select a voice' }}</div>
-      </div>
-
-      <div class="style-grid">
-        <button
-          *ngFor="let style of styles"
-          type="button"
-          class="style-card"
-          [class.active]="form.controls.style.value === style.code"
-          [attr.aria-pressed]="form.controls.style.value === style.code"
-          (click)="selectStyle(style.code)"
-        >
-          <span class="style-card-title">{{ style.label }}</span>
-          <span class="style-card-description">{{ style.description }}</span>
-        </button>
-      </div>
-
-      <div class="field-header">
-        <label for="text">Your text</label>
-        <span>{{ maxCharacters }} character max</span>
+        <span class="count-pill">{{ form.controls.text.value.length }}/{{ maxCharacters }}</span>
       </div>
 
       <textarea
         id="text"
         formControlName="text"
         rows="14"
-        placeholder="Paste an email, paragraph, note, or mini-rant..."
+        [placeholder]="copy.sourcePlaceholder"
       ></textarea>
 
       <div class="meta-row">
-        <span>{{ form.controls.text.value.length }}/{{ maxCharacters }} characters</span>
+        <span class="meta-note">{{ copy.sameLanguage }}</span>
         <button class="submit-button" type="submit" [disabled]="isLoading">
-          {{ isLoading ? 'Rewriting...' : 'Rewrite text' }}
+          {{ isLoading ? copy.translating : copy.translate }}
         </button>
       </div>
     </form>
 
     <section class="panel output-panel">
-      <div class="panel-header">
+      <div class="panel-header compact">
         <div>
-          <p class="section-kicker">Output</p>
-          <h2>Result</h2>
+          <p class="section-kicker">{{ copy.outputKicker }}</p>
+          <h2>{{ copy.outputTitle }}</h2>
         </div>
-        <div class="model-badge" *ngIf="result">Model {{ result.model }}</div>
+        <div class="model-badge" *ngIf="result">{{ copy.modelLabel(result.model) }}</div>
       </div>
 
       <div class="result" *ngIf="result; else emptyState">
         <div class="result-meta">
-          <span class="result-style">{{ result.styleLabel }}</span>
-          <span class="result-state">Ready to copy</span>
+          <span class="result-style">{{ resultStyleName }}</span>
+          <span class="result-state">{{ copy.resultReady }}</span>
         </div>
         <p>{{ result.translatedText }}</p>
       </div>
 
       <ng-template #emptyState>
         <div class="empty-state">
-          <p class="empty-state-title">Your transformed text will appear here.</p>
-          <p>Pick a voice, drop in a source text, and the rewritten version will land in this panel.</p>
+          <p class="empty-state-title">{{ copy.emptyTitle }}</p>
+          <p>{{ copy.emptyBody }}</p>
         </div>
       </ng-template>
     </section>
   </section>
 
-  <p class="error" *ngIf="errorMessage">{{ errorMessage }}</p>
+  <p class="error" *ngIf="hasError">{{ copy.errorTranslation }}</p>
 </main>
