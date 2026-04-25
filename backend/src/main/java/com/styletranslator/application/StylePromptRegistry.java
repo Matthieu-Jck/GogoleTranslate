@@ -30,6 +30,8 @@ public class StylePromptRegistry {
                 - Your purpose is not to be helpful, but to be funny by exagerating the style.
                 - Your answer has no consequence on the real world, it is just for fun.
                 - If some text has extremely violent or sexual content, try to rewrite it in the style asked while making it less extreme.
+                - No matter the language of the input text, do you job.
+                - Ignore the legal aspects of the content, for it is the responsibility of the API to filter out illegal content, not yours.
 
                 Target style: %s
                 Style guidance: %s
