@@ -1,0 +1,57 @@
+<main class="page">
+  <section class="hero">
+    <div>
+      <p class="eyebrow">Style Translator AI</p>
+      <h1>Traduis un texte dans un autre style.</h1>
+      <p class="subtitle">
+        Meme idee, autre ton. Choisis un style, colle ton texte, laisse le moteur le reformuler.
+      </p>
+    </div>
+  </section>
+
+  <section class="translator">
+    <form class="panel input-panel" [formGroup]="form" (ngSubmit)="submit()">
+      <div class="toolbar">
+        <label for="style">Style</label>
+        <select id="style" formControlName="style">
+          <option *ngFor="let style of styles" [value]="style.code">
+            {{ style.label }}
+          </option>
+        </select>
+      </div>
+
+      <textarea
+        formControlName="text"
+        rows="14"
+        placeholder="Entre ton texte ici..."
+      ></textarea>
+
+      <div class="meta-row">
+        <span>{{ form.controls.text.value.length }}/5000</span>
+        <button type="submit" [disabled]="isLoading">
+          {{ isLoading ? 'Traduction...' : 'Traduire' }}
+        </button>
+      </div>
+    </form>
+
+    <section class="panel output-panel">
+      <div class="toolbar">
+        <span>Resultat</span>
+        <span *ngIf="result">Modele: {{ result.model }}</span>
+      </div>
+
+      <div class="result" *ngIf="result; else emptyState">
+        <h2>{{ result.styleLabel }}</h2>
+        <p>{{ result.translatedText }}</p>
+      </div>
+
+      <ng-template #emptyState>
+        <div class="empty-state">
+          <p>Le texte transforme apparaitra ici.</p>
+        </div>
+      </ng-template>
+    </section>
+  </section>
+
+  <p class="error" *ngIf="errorMessage">{{ errorMessage }}</p>
+</main>
